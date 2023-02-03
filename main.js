@@ -17,6 +17,8 @@ input.addEventListener('keyup', function(event) {
   }
 });
 
+const itemsArr = [];
+
 function showData() {
     const cityName = input.value;
     input.value = '';
@@ -24,6 +26,14 @@ function showData() {
     if (cityName === '') {
         return;
     }
+
+    if (itemsArr.includes(cityName.toLowerCase())) {
+        showModal('This city already inputted');
+        return;
+    } else {
+        itemsArr.push(cityName.toLowerCase());
+    }
+
     try {
             fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&appid=${API_KEY}`)
             .then((response) => {
@@ -50,32 +60,24 @@ function showData() {
             divItem.classList.add('item');
             showBox.appendChild(divItem);
         }).catch(() => {
-            modal.style.display = "block";
-              
-            // span.onclick = function() {
-            //     modal.style.display = "none";
-            // }
-              
-            window.onclick = function(event) {
-                if (event.target === modal) {
-                  modal.style.display = "none";
-                }
-            }
+            itemsArr.pop();
+            showModal('Please search for a valid city');
         });
     } catch(error) {
         console.error(error);
     }
 }
 
-// function showData() {
-//     const cityName = input.value;
-//     fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_KEY}`)
-//         .then((response) => {
-//         return response.json();
-//     })
-//     .then((data) => {
-//         console.log(data);
-//     });
-// }
+function showModal(msg) {
+    document.querySelector('.modal-p').textContent = msg;
+    modal.style.display = "block";
+
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+            input.focus();
+        }
+    }
+}
 
 
